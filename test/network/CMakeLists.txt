@@ -1,0 +1,37 @@
+set(RUNTIME_OUPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test/network)
+
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+    set(NETWORK_BASE_NAME "network_epoll")
+    set(NETWORK_BASE_TEST_NAME "${NETWORK_BASE_NAME}_test")
+else()
+    set(NETWORK_BASE_NAME "network_epoll")
+    set(NETWORK_BASE_TEST_NAME "${NETWORK_BASE_NAME}_test")
+endif()
+
+add_executable(${NETWORK_BASE_TEST_NAME} ${NETWORK_BASE_NAME}/${NETWORK_BASE_TEST_NAME}.cpp)
+target_link_libraries(${NETWORK_BASE_TEST_NAME} PRIVATE
+    test_common_interface
+    ${NETWORK_BASE_NAME}_obj
+    ${NETWORK_BASE_NAME}_interface
+    gtest_main
+)
+set_target_properties(${NETWORK_BASE_TEST_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${RUNTIME_OUPUT_DIRECTORY}/${NETWORK_BASE_NAME}
+)
+add_test(NAME ${NETWORK_BASE_TEST_NAME} COMMAND ${NETWORK_BASE_TEST_NAME})
+
+
+set(NETWORK_MGR_NAME "network_mgr")
+set(NETWORK_MGR_TEST_NAME "${NETWORK_MGR_NAME}_test")
+
+add_executable(${NETWORK_MGR_TEST_NAME} ${NETWORK_MGR_TEST_NAME}.cpp)
+target_link_libraries(${NETWORK_MGR_TEST_NAME} PRIVATE
+    test_common_interface
+    ${NETWORK_MGR_NAME}_obj
+    ${NETWORK_MGR_NAME}_interface
+    gtest_main
+)
+set_target_properties(${NETWORK_MGR_TEST_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${RUNTIME_OUPUT_DIRECTORY}
+)
+add_test(NAME ${NETWORK_MGR_TEST_NAME} COMMAND ${NETWORK_MGR_TEST_NAME})
