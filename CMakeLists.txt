@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.25.1)
+
+project(rbl_engine LANGUAGES CXX)
+
+#默认是Debug版本
+#set(CMAKE_BUILD_TYPE "Release")
+
+# 确保头文件修改触发重编译
+set(CMAKE_DEPENDS_USE_COMPILER TRUE)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
