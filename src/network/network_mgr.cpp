@@ -222,7 +222,7 @@ NetworkMgr::network_loop(int timeout) noexcept {
             return false;
 
         for (int index = 0; index < event_num; ++index) {
-            NetWorkEvent event = event_list_[index];
+            NetworkEvent event = event_list_[index];
 
             if (event.is_error_) {
                 deal_error_event(event.fd_);

@@ -53,7 +53,7 @@ class NetworkMgr {
     static const int MAX_EVENT_NUM_ = 64;
     static const int READ_BUFFER_SIZE_ = 128;
     bool is_inited_ = false;
-    NetWorkEvent event_list_[MAX_EVENT_NUM_];
+    NetworkEvent event_list_[MAX_EVENT_NUM_];
     std::unordered_map<int, SocketData*> socket_list_;
     Network network_;
 

@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 bool
-NetworkEpoll::network_init(int max_event_num) noexcept {
+NetworkEpoll::impl_network_init(int max_event_num) noexcept {
     epoll_fd_ = epoll_create(1024);
 
     if (epoll_fd_ <= 0) {
@@ -20,7 +20,7 @@ NetworkEpoll::network_init(int max_event_num) noexcept {
 }
 
 int
-NetworkEpoll::network_event_monitor(NetWorkEvent *event_list, int timeout) noexcept {
+NetworkEpoll::impl_network_event_monitor(NetworkEvent *event_list, int timeout) noexcept {
     if (epoll_fd_ <= 0) {
         printf("[action:io multiplexing loop]epoll is not inited!\n");
 
@@ -44,7 +44,7 @@ NetworkEpoll::network_event_monitor(NetWorkEvent *event_list, int timeout) noexc
 }
 
 bool
-NetworkEpoll::network_release() noexcept {
+NetworkEpoll::impl_network_release() noexcept {
     if (epoll_fd_ <= 0) {
         printf("[action:io multiplexing loop]epoll is not inited!\n");
 
@@ -57,7 +57,7 @@ NetworkEpoll::network_release() noexcept {
 }
 
 bool
-NetworkEpoll::add_fd(int fd) noexcept {
+NetworkEpoll::impl_add_fd(int fd) noexcept {
     epoll_event event;
     event.events = EPOLLRDHUP | EPOLLIN;
     event.data.fd = fd;
@@ -74,7 +74,7 @@ NetworkEpoll::add_fd(int fd) noexcept {
 }
 
 bool
-NetworkEpoll::del_fd(int fd) noexcept {
+NetworkEpoll::impl_del_fd(int fd) noexcept {
     int result = epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, fd, nullptr);
 
     if (result != 0) {
@@ -87,7 +87,7 @@ NetworkEpoll::del_fd(int fd) noexcept {
 }
 
 bool
-NetworkEpoll::enable_events(int fd, bool is_read, bool is_write) noexcept {
+NetworkEpoll::impl_enable_events(int fd, bool is_read, bool is_write) noexcept {
     epoll_event event;
     event.events = EPOLLRDHUP | (is_read ? EPOLLIN : 0) | (is_write ? EPOLLOUT : 0);
     event.data.fd = fd;

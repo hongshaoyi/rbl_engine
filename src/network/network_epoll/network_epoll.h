@@ -3,19 +3,23 @@
 
 #include "../network_base.h"
 
-class NetworkEpoll : public NetworkBase {
+class NetworkEpoll final : public NetworkBase<NetworkEpoll> {
     int epoll_fd_ = 0;
     int MAX_EVENT_NUM_ = 0;
 
+    //利用友元特性来使父类能调用子类的私有函数
+    //从而将impl相关函数转为私有，防止外部调用
+    friend NetworkBase<NetworkEpoll>;
+
+    bool impl_network_init(int max_event_num) noexcept;
+    int impl_network_event_monitor(NetworkEvent *event_list, int timeout) noexcept;
+    bool impl_network_release() noexcept;
+
+    bool impl_add_fd(int fd) noexcept;
+    bool impl_del_fd(int fd) noexcept;
+    bool impl_enable_events(int fd, bool is_read, bool is_write) noexcept;
+
 public:
-    bool network_init(int max_event_num) noexcept override;
-    int network_event_monitor(NetWorkEvent *event_list, int timeout = -1) noexcept override;
-    bool network_release() noexcept override;
-
-    bool add_fd(int fd) noexcept override;
-    bool del_fd(int fd) noexcept override;
-    bool enable_events(int fd, bool is_read, bool is_write) noexcept override;
-
     NetworkEpoll() {};
     ~NetworkEpoll() {};
 

@@ -12,7 +12,7 @@ TEST(Epoll, InitMonitorRelease) {
 
     ASSERT_TRUE(network_epoll.network_init(64));
 
-    NetWorkEvent *event_list = new NetWorkEvent[64];
+    NetworkEvent *event_list = new NetworkEvent[64];
     ASSERT_EQ(network_epoll.network_event_monitor(event_list, 1000), 0);
     delete event_list;
 
