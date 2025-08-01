@@ -53,8 +53,6 @@ NetworkMgr::remove_socket(int fd) noexcept {
     }
 
     network_.del_fd(fd);
-
-    delete socket_list_[fd];
     socket_list_.erase(fd);
 }
 
@@ -83,11 +81,11 @@ NetworkMgr::accept_socket(int fd) noexcept {
 }
 
 void
-NetworkMgr::read_socket(SocketData *data) noexcept {
+NetworkMgr::read_socket(unique_ptr<SocketData> &data) noexcept {
     ReadBufferData *new_data = new ReadBufferData {READ_BUFFER_SIZE_};
 
     for (;;) {
-        int read_len = read(data->fd_, new_data->buffer_, READ_BUFFER_SIZE_);
+        int read_len = read(data->fd_, new_data->buffer_.get(), READ_BUFFER_SIZE_);
 
         if (read_len <= 0) {
             delete new_data;
@@ -117,12 +115,12 @@ NetworkMgr::read_socket(SocketData *data) noexcept {
 }
 
 void
-NetworkMgr::write_socket(SocketData *data) noexcept {
+NetworkMgr::write_socket(unique_ptr<SocketData> &data) noexcept {
     while (!data->write_list_.empty()) {
-        WriteBufferData *buffer = data->write_list_.front();
+        unique_ptr<WriteBufferData> &buffer = data->write_list_.front();
 
         for (;;) {
-            int write_len = write(data->fd_, buffer->start_ptr_, buffer->remain_size_);
+            int write_len = write(data->fd_, buffer->get_start_ptr(), buffer->remain_size_);
 
             if (write_len <= 0) {
                 switch (errno) {
@@ -139,15 +137,12 @@ NetworkMgr::write_socket(SocketData *data) noexcept {
                 return;
             }
             else {
-                buffer->start_ptr_ += write_len;
                 buffer->remain_size_ -= write_len;
 
                 if (buffer->remain_size_ > 0)
                     return;
-                else {
-                    delete buffer;
+                else
                     data->write_list_.pop_front();
-                }
             }
         }
     }
@@ -161,7 +156,7 @@ NetworkMgr::deal_read_event(int fd) noexcept {
         return;
     }
 
-    SocketData *data = socket_list_[fd];
+    unique_ptr<SocketData> &data = socket_list_[fd];
 
     switch (data->socket_type_) {
         case LISTENED_TYPE:
@@ -187,7 +182,7 @@ NetworkMgr::deal_write_event(int fd) noexcept {
         return;
     }
 
-    SocketData *data = socket_list_[fd];
+    unique_ptr<SocketData> &data = socket_list_[fd];
 
     write_socket(data);
 }
