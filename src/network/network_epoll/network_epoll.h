@@ -20,8 +20,8 @@ class NetworkEpoll final : public NetworkBase<NetworkEpoll> {
     bool impl_enable_events(int fd, bool is_read, bool is_write) noexcept;
 
 public:
-    NetworkEpoll() {};
-    ~NetworkEpoll() {};
+    NetworkEpoll() = default;
+    ~NetworkEpoll() = default;
 
     NetworkEpoll(NetworkEpoll &epoll) = delete;
     NetworkEpoll& operator=(NetworkEpoll &epoll) = delete;

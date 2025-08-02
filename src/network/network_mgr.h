@@ -23,7 +23,7 @@ class NetworkMgr {
         std::unique_ptr<char[]> buffer_;
         int size_;
 
-        ReadBufferData(int size) {
+        explicit ReadBufferData(int size) {
             if (size > 0) {
                 buffer_.reset(new char[size]);
                 size_ = size;
@@ -37,7 +37,7 @@ class NetworkMgr {
         int size_;
         int remain_size_;
 
-        WriteBufferData(char *buffer, int size) : buffer_{buffer}, size_{size_}, remain_size_{size_} {};
+        explicit WriteBufferData(char *buffer, int size) : buffer_{buffer}, size_{size_}, remain_size_{size_} {};
         char* get_start_ptr() {return &buffer_[size_ - remain_size_];};
     };
     struct SocketData {
@@ -46,7 +46,7 @@ class NetworkMgr {
         int fd_;
         SOCKET_TYPE socket_type_;
 
-        SocketData(int fd, SOCKET_TYPE socket_type) : fd_{fd}, socket_type_{socket_type} {};
+        explicit SocketData(int fd, SOCKET_TYPE socket_type) : fd_{fd}, socket_type_{socket_type} {};
     };
     static const int DEFAULT_BACKLOG_ = 128;
     static const int MAX_EVENT_NUM_ = 64;

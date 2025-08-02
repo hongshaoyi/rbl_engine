@@ -37,9 +37,7 @@ NetworkMgr::add_socket(int fd, SOCKET_TYPE socket_type) noexcept {
 
     set_socket_noblocking(fd);
 
-    SocketData *data = new SocketData {fd, socket_type};
-
-    socket_list_.emplace(fd, data);
+    socket_list_.emplace(fd, new SocketData {fd, socket_type});
 
     return true;
 }
@@ -63,7 +61,7 @@ NetworkMgr::accept_socket(int fd) noexcept {
 
     memset(&address, 0, addr_len);
 
-    int client_fd = accept(fd, (sockaddr*)&address, &addr_len);
+    int client_fd = accept(fd, reinterpret_cast<sockaddr*>(&address), &addr_len);
 
     if (client_fd < 0) {
         printf("[action:accept socket]accept failed!, errno: %d\n", errno);
@@ -82,14 +80,12 @@ NetworkMgr::accept_socket(int fd) noexcept {
 
 void
 NetworkMgr::read_socket(unique_ptr<SocketData> &data) noexcept {
-    ReadBufferData *new_data = new ReadBufferData {READ_BUFFER_SIZE_};
+    unique_ptr<ReadBufferData> new_data(new ReadBufferData {READ_BUFFER_SIZE_});
 
     for (;;) {
         int read_len = read(data->fd_, new_data->buffer_.get(), READ_BUFFER_SIZE_);
 
         if (read_len <= 0) {
-            delete new_data;
-
             if (read_len == 0)
                 deal_error_event(data->fd_);
             else
@@ -104,10 +100,10 @@ NetworkMgr::read_socket(unique_ptr<SocketData> &data) noexcept {
             break;
         }
         else {
-            data->read_list_.emplace_back(new_data);
+            data->read_list_.emplace_back(new_data.release());
 
             if (read_len == READ_BUFFER_SIZE_)
-                new_data = new ReadBufferData {READ_BUFFER_SIZE_};
+                new_data.reset(new ReadBufferData {READ_BUFFER_SIZE_});
             else
                 break;
         }
@@ -284,7 +280,7 @@ NetworkMgr::listen_socket(const std::string &ip, const int port) noexcept {
     inet_pton(AF_INET, ip.c_str(), &(address.sin_addr));
     address.sin_port = htons(port);
 
-    int bind_result = bind(socket_fd, (sockaddr*)&address, sizeof(address));
+    int bind_result = bind(socket_fd, reinterpret_cast<sockaddr*>(&address), sizeof(address));
 
     if (bind_result != 0) {
         switch (errno) {
