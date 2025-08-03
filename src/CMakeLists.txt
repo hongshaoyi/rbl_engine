@@ -1,3 +1,4 @@
+add_subdirectory(base)
 add_subdirectory(network)
 
 add_executable(rbl_engine engine_main.cpp)

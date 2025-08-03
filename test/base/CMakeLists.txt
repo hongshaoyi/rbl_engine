@@ -1,0 +1,15 @@
+set(RUNTIME_OUPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test/base)
+
+set(SINGLETON_NAME "singleton")
+set(SINGLETON_TEST_NAME "${SINGLETON_NAME}_test")
+
+add_executable(${SINGLETON_TEST_NAME} ${SINGLETON_TEST_NAME}.cpp)
+target_link_libraries(${SINGLETON_TEST_NAME} PRIVATE
+    test_common_interface
+    ${SINGLETON_NAME}_interface
+    gtest_main
+)
+set_target_properties(${SINGLETON_TEST_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${RUNTIME_OUPUT_DIRECTORY}
+)
+add_test(NAME ${SINGLETON_TEST_NAME} COMMAND ${SINGLETON_TEST_NAME})
