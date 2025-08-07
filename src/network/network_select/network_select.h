@@ -19,7 +19,7 @@ class NetworkSelect final : public NetworkBase<NetworkSelect> {
     std::unordered_map<int, std::unique_ptr<NetworkEvent>> fd_map_;
     std::queue<std::unique_ptr<NetworkEvent>> event_queue_;
     int MAX_EVENT_NUM_ = 0;
-    int NETWORK_EVENT_SIZE_ = sizeof(NetworkEvent);
+    const int NETWORK_EVENT_SIZE_ = sizeof(NetworkEvent);
 
     friend NetworkBase<NetworkSelect>;
 
