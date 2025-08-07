@@ -54,7 +54,7 @@ NetworkSelect::impl_network_event_monitor(NetworkEvent *event_list, int timeout)
     int result = select(max_fd + 1, &read_fds_, &write_fds_, &error_fds_, timeout < 0 ? nullptr : &tv);
 
     if (result == -1) {
-        printf("[action:impl network event monitor]select failed! errno: %d, reason: %s\n", errno, strerror(errno));
+        printf("[action:impl network event monitor]select failed, errno: %d, reason: %s\n", errno, strerror(errno));
 
         return -1;
     }
@@ -97,7 +97,7 @@ NetworkSelect::impl_add_fd(int fd) noexcept {
     }
 
     if (fd_map_.find(fd) != fd_map_.end()) {
-        printf("[action:impl add fd]the fd is repeat! fd: %d\n", fd);
+        printf("[action:impl add fd]the fd is repeat, fd: %d\n", fd);
 
         return false;
     }
@@ -110,7 +110,7 @@ NetworkSelect::impl_add_fd(int fd) noexcept {
 bool
 NetworkSelect::impl_del_fd(int fd) noexcept {
     if (fd_map_.find(fd) == fd_map_.end()) {
-        printf("[action:impl add fd]the fd is not exist! fd: %d\n", fd);
+        printf("[action:impl add fd]the fd is not exist, fd: %d\n", fd);
 
         return false;
     }
@@ -123,7 +123,7 @@ NetworkSelect::impl_del_fd(int fd) noexcept {
 bool
 NetworkSelect::impl_enable_events(int fd, bool is_read, bool is_write) noexcept {
     if (fd_map_.find(fd) == fd_map_.end()) {
-        printf("[action:impl emable events]the fd is not exist! fd: %d\n", fd);
+        printf("[action:impl emable events]the fd is not exist, fd: %d\n", fd);
 
         return false;
     }

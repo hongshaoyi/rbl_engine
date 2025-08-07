@@ -24,13 +24,13 @@ NetworkMgr::set_socket_noblocking(int fd) noexcept {
 bool
 NetworkMgr::add_socket(int fd, SOCKET_TYPE socket_type) noexcept {
     if (socket_list_.find(fd) != socket_list_.end()) {
-        printf("[action:add socket]the fd: %d is exist!\n", fd);
+        printf("[action:add socket]the fd is exist, fd: %d\n", fd);
 
         return false;
     }
 
     if (!network_.add_fd(fd)) {
-        printf("[action:add socket]fd: %d add failed!\n", fd);
+        printf("[action:add socket]fd add failed, fd: %d\n", fd);
 
         return false;
     }
@@ -45,7 +45,7 @@ NetworkMgr::add_socket(int fd, SOCKET_TYPE socket_type) noexcept {
 void
 NetworkMgr::remove_socket(int fd) noexcept {
     if (socket_list_.find(fd) == socket_list_.end()) {
-        printf("[action:remove socket]the fd: %d is not exist!\n", fd);
+        printf("[action:remove socket]the fd is not exist, fd: %d\n", fd);
 
         return;
     }
@@ -64,13 +64,13 @@ NetworkMgr::accept_socket(int fd) noexcept {
     int client_fd = accept(fd, reinterpret_cast<sockaddr*>(&address), &addr_len);
 
     if (client_fd < 0) {
-        printf("[action:accept socket]accept failed!, errno: %d\n", errno);
+        printf("[action:accept socket]accept failed, errno: %d, reason: %s\n", errno, strerror(errno));
 
         return;
     }
 
     if (!add_socket(client_fd, CONNECTED_TYPE)) {
-        printf("[action:accept socket]add failed!\n");
+        printf("[action:accept socket]add failed, fd: %d\n", client_fd);
 
         close(client_fd);
 
@@ -94,7 +94,7 @@ NetworkMgr::read_socket(unique_ptr<SocketData> &data) noexcept {
                     case EAGAIN:
                         break;
                     default:
-                        printf("[action:read socket]no deal error! errno: %d\n", errno);
+                        printf("[action:read socket]no deal error, errno: %d, reason: %s\n", errno, strerror(errno));
                 }
 
             break;
@@ -125,7 +125,7 @@ NetworkMgr::write_socket(unique_ptr<SocketData> &data) noexcept {
                     case EAGAIN:
                         break;
                     default:
-                        printf("[action:write socket]no deal error! errno: %d\n", errno);
+                        printf("[action:write socket]no deal error, errno: %d, reason: %s\n", errno, strerror(errno));
 
                         break;
                 }
@@ -147,7 +147,7 @@ NetworkMgr::write_socket(unique_ptr<SocketData> &data) noexcept {
 void
 NetworkMgr::deal_read_event(int fd) noexcept {
     if (socket_list_.find(fd) == socket_list_.end()) {
-        printf("[action:deal read event]the fd: %d is not exist!\n", fd);
+        printf("[action:deal read event]the fd is not exist, fd: %d\n", fd);
 
         return;
     }
@@ -173,7 +173,7 @@ NetworkMgr::deal_read_event(int fd) noexcept {
 void
 NetworkMgr::deal_write_event(int fd) noexcept {
     if (socket_list_.find(fd) == socket_list_.end()) {
-        printf("[action:deal write event]the fd: %d is not exist!\n", fd);
+        printf("[action:deal write event]the fd is not exist, fd: %d\n", fd);
 
         return;
     }
@@ -194,7 +194,7 @@ NetworkMgr::network_init() noexcept {
     bool result = network_.network_init(MAX_EVENT_NUM_);
 
     if (!result) {
-        printf("[action:network init]io multiplexing init failed!\n");
+        printf("[action:network init]init failed!\n");
 
         return false;
     }
@@ -237,7 +237,7 @@ NetworkMgr::network_exit() noexcept {
     bool result = network_.network_release();
 
     if (!result) {
-        printf("[action:network exit]io multiplexing release failed!\n");
+        printf("[action:network exit]release failed!\n");
 
         return false;
     }
@@ -246,15 +246,15 @@ NetworkMgr::network_exit() noexcept {
 }
 
 bool
-NetworkMgr::listen_socket(const std::string &ip, const int port) noexcept {
+NetworkMgr::listen_socket(const string &ip, const int port) noexcept {
     if (ip.length() == 0) {
-        printf("[action:listen socket]the ip is invailed!\n");
+        printf("[action:listen socket]the ip is invailed, ip: %s\n", ip);
 
         return false;
     }
 
     if (port <= 0) {
-        printf("[action:listen socket]the port is invailed!\n");
+        printf("[action:listen socket]the port is invailed, port: %d\n", port);
 
         return false;
     }
@@ -268,7 +268,7 @@ NetworkMgr::listen_socket(const std::string &ip, const int port) noexcept {
     int socket_fd = socket(PF_INET, SOCK_STREAM, 0);
 
     if (socket_fd < 0) {
-        printf("[action:listen socket]create socket failed!\n");
+        printf("[action:listen socket]create socket failed, errno: %d, reason: %s\n", errno, strerror(errno));
 
         return false;
     }
@@ -283,18 +283,18 @@ NetworkMgr::listen_socket(const std::string &ip, const int port) noexcept {
     int bind_result = bind(socket_fd, reinterpret_cast<sockaddr*>(&address), sizeof(address));
 
     if (bind_result != 0) {
+        printf("[action:listen socket]bind failed, errno: %d, reason: %s\n", errno, strerror(errno));
+
         switch (errno) {
             case EACCES:
-                printf("[action:listen socket]bind failed, the port: %d is protected!\n", port);
+                printf("[action:listen socket]bind failed, the port is protected, port: %d\n", port);
 
                 break;
             case EADDRINUSE:
-                printf("[action:listen socket]the port is in use!\n");
+                printf("[action:listen socket]the port is in use, port: %d\n", port);
 
                 break;
             default:
-                printf("[action:listen socket]bind failed!\n");
-
                 break;
         }
 
@@ -307,7 +307,7 @@ NetworkMgr::listen_socket(const std::string &ip, const int port) noexcept {
     int listen_result = listen(socket_fd, DEFAULT_BACKLOG_);
 
     if (listen_result != 0) {
-        printf("[action:listen socket]listen failed!\n");
+        printf("[action:listen socket]listen failed, errno: %d, reason: %s\n", errno, strerror(errno));
 
         close(socket_fd);
 
@@ -315,7 +315,7 @@ NetworkMgr::listen_socket(const std::string &ip, const int port) noexcept {
     }
 
     if (!add_socket(socket_fd, LISTENED_TYPE)) {
-        printf("[action:listen socket]add fd: %d failed!\n", socket_fd);
+        printf("[action:listen socket]add fd failed, fd: %d\n", socket_fd);
 
         close(socket_fd);
 

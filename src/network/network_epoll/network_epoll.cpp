@@ -4,13 +4,14 @@
 #include <cstdio>
 #include <unistd.h>
 #include <errno.h>
+#include <cstring>
 
 bool
 NetworkEpoll::impl_network_init(int max_event_num) noexcept {
     epoll_fd_ = epoll_create(1024);
 
     if (epoll_fd_ == -1) {
-        printf("[action:impl network init]create epoll failed! errno: %d\n", errno);
+        printf("[action:impl network init]create epoll failed, errno: %d, reason: %s\n", errno, strerror(errno));
 
         return false;
     }
@@ -33,7 +34,7 @@ NetworkEpoll::impl_network_event_monitor(NetworkEvent *event_list, int timeout) 
     int event_num = epoll_wait(epoll_fd_, events, MAX_EVENT_NUM_, timeout);
 
     if (event_num == -1) {
-        printf("[action:impl network event monitor]epoll wait failed! errno: %d\n", errno);
+        printf("[action:impl network event monitor]epoll wait failed, errno: %d, reason: %s\n", errno, strerror(errno));
 
         return -1;
     }
@@ -72,7 +73,7 @@ NetworkEpoll::impl_add_fd(int fd) noexcept {
     int result = epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, fd, &event);
 
     if (result != 0) {
-        printf("[action:impl add fd]add failed! errno: %d\n", errno);
+        printf("[action:impl add fd]add failed, errno: %d, reason: %s\n", errno, strerror(errno));
 
         return false;
     }
@@ -85,7 +86,7 @@ NetworkEpoll::impl_del_fd(int fd) noexcept {
     int result = epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, fd, nullptr);
 
     if (result != 0) {
-        printf("[action:impl del fd]del failed! errno: %d\n", errno);
+        printf("[action:impl del fd]del failed, errno: %d, reason: %s\n", errno, strerror(errno));
 
         return false;
     }
@@ -102,7 +103,7 @@ NetworkEpoll::impl_enable_events(int fd, bool is_read, bool is_write) noexcept {
     int result = epoll_ctl(epoll_fd_, EPOLL_CTL_MOD, fd, &event);
 
     if (result != 0) {
-        printf("[action:impl enable events]enable failed! errno: %d\n", errno);
+        printf("[action:impl enable events]enable failed, errno: %d, reason: %s\n", errno, strerror(errno));
 
         return false;
     }
