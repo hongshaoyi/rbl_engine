@@ -12,7 +12,7 @@ class NetworkEpoll final : public NetworkBase<NetworkEpoll> {
     friend NetworkBase<NetworkEpoll>;
 
     bool impl_network_init(int max_event_num) noexcept;
-    int impl_network_event_monitor(NetworkEvent *event_list, int timeout) noexcept;
+    int impl_network_event_monitor(NetworkEvent *event_array, int timeout) noexcept;
     bool impl_network_release() noexcept;
 
     bool impl_add_fd(int fd) noexcept;

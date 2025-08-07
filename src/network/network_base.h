@@ -1,7 +1,6 @@
 #ifndef __NETWORK_BASE_H__
 #define __NETWORK_BASE_H__
 
-
 struct NetworkEvent {
     int fd_;
     bool is_read_;
@@ -14,7 +13,7 @@ struct NetworkEvent {
 class NetworkBase {
 public:
     virtual bool network_init(int max_event_num) noexcept = 0;
-    virtual int network_event_monitor(NetWorkEvent *event_list, int timeout) noexcept = 0;
+    virtual int network_event_monitor(NetWorkEvent *event_array, int timeout) noexcept = 0;
     virtual bool network_release() noexcept = 0;
 
     virtual bool add_fd(int fd) noexcept = 0;
@@ -32,8 +31,8 @@ public:
     bool network_init(int max_event_num) noexcept {
         return static_cast<Derived*>(this)->impl_network_init(max_event_num);
     }
-    int network_event_monitor(NetworkEvent *event_list, int timeout = -1) noexcept {
-        return static_cast<Derived*>(this)->impl_network_event_monitor(event_list, timeout);
+    int network_event_monitor(NetworkEvent *event_array, int timeout = -1) noexcept {
+        return static_cast<Derived*>(this)->impl_network_event_monitor(event_array, timeout);
     }
     bool network_release() noexcept {
         return static_cast<Derived*>(this)->impl_network_release();

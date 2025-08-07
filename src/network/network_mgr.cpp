@@ -23,7 +23,7 @@ NetworkMgr::set_socket_noblocking(int fd) noexcept {
 
 bool
 NetworkMgr::add_socket(int fd, SOCKET_TYPE socket_type) noexcept {
-    if (socket_list_.find(fd) != socket_list_.end()) {
+    if (socket_map_.find(fd) != socket_map_.end()) {
         printf("[action:add socket]the fd is exist, fd: %d\n", fd);
 
         return false;
@@ -37,21 +37,21 @@ NetworkMgr::add_socket(int fd, SOCKET_TYPE socket_type) noexcept {
 
     set_socket_noblocking(fd);
 
-    socket_list_.emplace(fd, new SocketData {fd, socket_type});
+    socket_map_.emplace(fd, new SocketData {fd, socket_type});
 
     return true;
 }
 
 void
 NetworkMgr::remove_socket(int fd) noexcept {
-    if (socket_list_.find(fd) == socket_list_.end()) {
+    if (socket_map_.find(fd) == socket_map_.end()) {
         printf("[action:remove socket]the fd is not exist, fd: %d\n", fd);
 
         return;
     }
 
     network_.del_fd(fd);
-    socket_list_.erase(fd);
+    socket_map_.erase(fd);
 }
 
 void
@@ -146,13 +146,13 @@ NetworkMgr::write_socket(unique_ptr<SocketData> &data) noexcept {
 
 void
 NetworkMgr::deal_read_event(int fd) noexcept {
-    if (socket_list_.find(fd) == socket_list_.end()) {
+    if (socket_map_.find(fd) == socket_map_.end()) {
         printf("[action:deal read event]the fd is not exist, fd: %d\n", fd);
 
         return;
     }
 
-    unique_ptr<SocketData> &data = socket_list_[fd];
+    unique_ptr<SocketData> &data = socket_map_[fd];
 
     switch (data->socket_type_) {
         case LISTENED_TYPE:
@@ -172,13 +172,13 @@ NetworkMgr::deal_read_event(int fd) noexcept {
 
 void
 NetworkMgr::deal_write_event(int fd) noexcept {
-    if (socket_list_.find(fd) == socket_list_.end()) {
+    if (socket_map_.find(fd) == socket_map_.end()) {
         printf("[action:deal write event]the fd is not exist, fd: %d\n", fd);
 
         return;
     }
 
-    unique_ptr<SocketData> &data = socket_list_[fd];
+    unique_ptr<SocketData> &data = socket_map_[fd];
 
     write_socket(data);
 }
@@ -207,7 +207,7 @@ NetworkMgr::network_init() noexcept {
 bool
 NetworkMgr::network_loop(int timeout) noexcept {
     while (true) {
-        int event_num = network_.network_event_monitor(event_list_, timeout);
+        int event_num = network_.network_event_monitor(event_array_, timeout);
 
         if (event_num < 0)
             if (event_num == -1) {
@@ -241,7 +241,7 @@ NetworkMgr::network_loop(int timeout) noexcept {
             }
 
         for (int index = 0; index < event_num; ++index) {
-            NetworkEvent event = event_list_[index];
+            NetworkEvent event = event_array_[index];
 
             if (event.is_error_) {
                 deal_error_event(event.fd_);
