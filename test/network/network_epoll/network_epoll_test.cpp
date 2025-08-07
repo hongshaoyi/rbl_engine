@@ -6,7 +6,7 @@
 TEST(Epoll, InitMonitorRelease) {
     NetworkEpoll network_epoll;
 
-    EXPECT_EQ(network_epoll.network_event_monitor(nullptr), -1);
+    EXPECT_EQ(network_epoll.network_event_monitor(nullptr), -2);
 
     EXPECT_FALSE(network_epoll.network_release());
 

@@ -210,7 +210,35 @@ NetworkMgr::network_loop(int timeout) noexcept {
         int event_num = network_.network_event_monitor(event_list_, timeout);
 
         if (event_num < 0)
-            return false;
+            if (event_num == -1) {
+                printf("[action:network loop]loop error, errno: %d, reason: %s\n", errno, strerror(errno));
+
+                switch (errno) {
+                    case EINTR:
+                        printf("[action:network loop]interrupted by singal, continue!\n");
+
+                        continue;
+                    case ENOMEM:
+                        printf("[action:network loop]out of memory, try later!\n");
+                        sleep(1);
+
+                        continue;
+                    default:
+                        printf("[action:]other error, stop!\n");
+
+                        return false;
+                }
+            }
+            else if (event_num == -2) {
+                printf("[action:network loop]customize error!\n");
+
+                return false;
+            }
+            else {
+                printf("[action:network loop]unknown error!\n");
+
+                return false;
+            }
 
         for (int index = 0; index < event_num; ++index) {
             NetworkEvent event = event_list_[index];
@@ -287,7 +315,7 @@ NetworkMgr::listen_socket(const string &ip, const int port) noexcept {
 
         switch (errno) {
             case EACCES:
-                printf("[action:listen socket]bind failed, the port is protected, port: %d\n", port);
+                printf("[action:listen socket]the port is protected, port: %d\n", port);
 
                 break;
             case EADDRINUSE:
@@ -295,6 +323,8 @@ NetworkMgr::listen_socket(const string &ip, const int port) noexcept {
 
                 break;
             default:
+                printf("[action:listen socket]other error!\n");
+
                 break;
         }
 

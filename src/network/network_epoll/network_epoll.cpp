@@ -26,7 +26,8 @@ NetworkEpoll::impl_network_event_monitor(NetworkEvent *event_list, int timeout) 
     if (epoll_fd_ <= 0) {
         printf("[action:impl network event monitor]epoll is not inited!\n");
 
-        return -1;
+        //不和epoll_wait的-1混在一起
+        return -2;
     }
 
     epoll_event events[MAX_EVENT_NUM_];
