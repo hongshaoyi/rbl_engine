@@ -35,10 +35,10 @@ public:
     NetworkSelect() = default;
     ~NetworkSelect() = default;
 
-    NetworkSelect(NetworkSelect &epoll) = delete;
-    NetworkSelect& operator=(NetworkSelect &epoll) = delete;
-    NetworkSelect(NetworkSelect &&epoll) = delete;
-    NetworkSelect& operator=(NetworkSelect &&epoll) = delete;
+    NetworkSelect(NetworkSelect &select) = delete;
+    NetworkSelect& operator=(NetworkSelect &select) = delete;
+    NetworkSelect(NetworkSelect &&select) = delete;
+    NetworkSelect& operator=(NetworkSelect &&select) = delete;
 };
 
 #endif
