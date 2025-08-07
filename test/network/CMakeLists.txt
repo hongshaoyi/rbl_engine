@@ -4,7 +4,7 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
     set(NETWORK_BASE_NAME "network_epoll")
     set(NETWORK_BASE_TEST_NAME "${NETWORK_BASE_NAME}_test")
 else()
-    set(NETWORK_BASE_NAME "network_epoll")
+    set(NETWORK_BASE_NAME "network_select")
     set(NETWORK_BASE_TEST_NAME "${NETWORK_BASE_NAME}_test")
 endif()
 

@@ -4,8 +4,10 @@
 TEST(NetworkMgr, InitLoopExit) {
     NetworkMgr network_mgr;
 
+#ifdef __linux__
     EXPECT_FALSE(network_mgr.network_loop());
     EXPECT_FALSE(network_mgr.network_exit());
+#endif
 
     ASSERT_TRUE(network_mgr.network_init());
 

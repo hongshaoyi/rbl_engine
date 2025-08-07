@@ -5,8 +5,8 @@
 #include "network_epoll/network_epoll.h"
 using Network = NetworkEpoll;
 #else
-#include "network_epoll/io_multiplexing_epoll.h"
-using IOMultiplexing = IOMultiplexingEpoll;
+#include "network_select/network_select.h"
+using Network = NetworkSelect;
 #endif
 
 #include <string>
