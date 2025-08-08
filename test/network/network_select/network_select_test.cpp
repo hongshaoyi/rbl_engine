@@ -3,7 +3,7 @@
 
 #include <sys/socket.h>
 
-TEST(Epoll, InitMonitorRelease) {
+TEST(Select, InitMonitorRelease) {
     NetworkSelect network_select;
 
     ASSERT_TRUE(network_select.network_init(64));
@@ -15,7 +15,7 @@ TEST(Epoll, InitMonitorRelease) {
     ASSERT_TRUE(network_select.network_release());
 }
 
-TEST(Epoll, AddOrDelFd) {
+TEST(Select, AddOrDelFd) {
     NetworkSelect network_select;
 
     int socket_fd = socket(PF_INET, SOCK_STREAM, 0);
@@ -29,7 +29,7 @@ TEST(Epoll, AddOrDelFd) {
     close(socket_fd);
 }
 
-TEST(Epoll, EnableEvents) {
+TEST(Select, EnableEvents) {
     NetworkSelect network_select;
 
     int socket_fd = socket(PF_INET, SOCK_STREAM, 0);
